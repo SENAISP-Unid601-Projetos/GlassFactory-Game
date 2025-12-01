@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Créditos - Glass Factory</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: url('IMG/fundoIndex.png') center/cover no-repeat fixed;
+            color: white;
+            font-family: 'Arial', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+        }
+
+        /* Overlay escuro para melhor legibilidade */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1;
+        }
+
+        .creditos-container {
+            background: rgba(0, 0, 0, 0.85);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 0 50px rgba(255, 255, 255, 0.2);
+            max-width: 800px;
+            margin: 20px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            z-index: 2;
+        }
+
+        h1 {
+            font-size: 3em;
+            margin-bottom: 30px;
+            color: #4CAF50;
+            text-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+        }
+
+        h2 {
+            font-size: 2em;
+            margin: 30px 0 20px 0;
+            color: #FFD700;
+        }
+
+        .equipe, .agradecimentos, .tecnologias {
+            text-align: left;
+            margin: 25px 0;
+            padding: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        ul {
+            list-style-type: none;
+            padding-left: 20px;
+        }
+
+        li {
+            margin: 10px 0;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        li:last-child {
+            border-bottom: none;
+        }
+
+        .botao-voltar {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 30px;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 3;
+        }
+
+        .botao-voltar:hover {
+            background: #45a049;
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(76, 175, 80, 0.7);
+        }
+
+        /* Fallback caso a imagem não carregue */
+        .fallback-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            z-index: -1;
+            display: none;
+        }
+
+        .logo {
+            margin-bottom: 20px;
+        }
+
+        .logo img {
+            max-width: 200px;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <!-- Fallback background - só aparece se necessário -->
+    <div class="fallback-bg" id="fallbackBg"></div>
+    
+    <div class="creditos-container">
+        <div class="logo">
+            <img src="IMG/LOGO1_Pranc.png" alt="Glass Factory Logo">
+        </div>
+        
+        <h1>Créditos</h1>
+
+        <div class="equipe">
+            <h2>🎮 Equipe de Desenvolvimento</h2>
+            <ul>
+                <li><strong>Ághata Rodrigues</li>
+                <li><strong>Ana Júlia de Marco</li>
+                <li><strong>Pedro Dornelles Marinsek</li>
+                <li><strong>Thaís Marina Tangerino Beltrame</li>
+            </ul>
+        </div>
+
+        <div class="agradecimentos">
+            <h2>🙏 Agradecimentos Especiais</h2>
+            <ul>
+                <li>A todos os jogadores que apoiaram nosso projeto</li>
+                <li>Aos professores e orientadores pelo suporte técnico</li>
+                <li>À comunidade de desenvolvimento de games</li>
+                <li>Aos familiares e amigos pelo apoio durante o desenvolvimento</li>
+            </ul>
+        </div>
+
+        <div class="tecnologias">
+            <h2>⚙️ Tecnologias Utilizadas</h2>
+            <ul>
+                <li><strong>Linguagens:</strong> HTML5, CSS3, JavaScript</li>
+                <li><strong>Plataforma:</strong> Navegador Web</li>
+                <li><strong>Ferramentas:</strong> Visual Studio Code, Photoshop, Adobe After Effects, Canva e Adobe Illustrator</li>
+                <li><strong>Assets:</strong> Sprites originais e recursos customizados. Todas as músicas são creditadas aos seus respectivos autores.</li>
+            </ul>
+        </div>
+
+        <div class="sobre-jogo">
+            <h2>🏭 Sobre o Jogo</h2>
+            <p>Glass Factory é um simulador educativo que ensina sobre processos industriais sustentáveis na fabricação de vidro.</p>
+            <p>Desenvolvido com o objetivo de conscientizar sobre práticas ambientais responsáveis na indústria.</p>
+        </div>
+
+        <button class="botao-voltar" onclick="voltarAoInicio()">Voltar à Página Inicial</button>
+    </div>
+
+    <script>
+        function voltarAoInicio() {
+            window.location.href = 'index.html'; 
+        }
+
+        // Verificar se a imagem de fundo carregou
+        window.addEventListener('load', function() {
+            const bgImage = new Image();
+            bgImage.src = 'IMG/fundoIndex.png';
+            
+            bgImage.onload = function() {
+                console.log('Imagem de fundo carregada com sucesso');
+                document.getElementById('fallbackBg').style.display = 'none';
+                document.body.style.backgroundImage = 'url("IMG/fundoIndex.png")';
+            };
+            
+            bgImage.onerror = function() {
+                console.log('Erro ao carregar imagem de fundo, usando fallback');
+                document.getElementById('fallbackBg').style.display = 'block';
+                document.body.style.backgroundImage = 'none';
+            };
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parabéns! - Glass Factory</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            /* IMAGEM DE FUNDO - CORREÇÃO DEFINITIVA */
+            background: url('IMG/fundoIndex.png') center/cover no-repeat fixed;
+            color: white;
+            font-family: 'Arial', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+        }
+
+        /* Overlay escuro para melhor legibilidade - CORRIGIDO */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6); /* Reduzi a opacidade para 0.6 */
+            z-index: 1; /* Mantém atrás do conteúdo */
+        }
+
+        .creditos-container {
+            background: rgba(0, 0, 0, 0.85);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 0 50px rgba(255, 255, 255, 0.2);
+            max-width: 800px;
+            margin: 20px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            z-index: 2; /* Garante que fique acima do overlay */
+        }
+
+        h1 {
+            font-size: 3em;
+            margin-bottom: 20px;
+            color: #4CAF50;
+            text-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+        }
+
+        h2 {
+            font-size: 2em;
+            margin: 30px 0 20px 0;
+            color: #FFD700;
+        }
+
+        .mensagem-parabens {
+            font-size: 1.3em;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .equipe, .agradecimentos {
+            text-align: left;
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .botao-voltar {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 30px;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 3;
+        }
+
+        .botao-voltar:hover {
+            background: #45a049;
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(76, 175, 80, 0.7);
+        }
+
+        .icone-sucesso {
+            font-size: 4em;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+            position: relative;
+            z-index: 2;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        /* Fallback caso a imagem não carregue - CORRIGIDO */
+        .fallback-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            z-index: -1; /* Fica atrás de tudo */
+            display: none; /* Escondido por padrão */
+        }
+    </style>
+</head>
+<body>
+    <!-- Fallback background - só aparece se necessário -->
+    <div class="fallback-bg" id="fallbackBg"></div>
+    
+    <div class="creditos-container">
+        <div class="icone-sucesso">🎉🏆🌱</div>
+        <h1>PARABÉNS!</h1>
+        
+        <div class="mensagem-parabens">
+            <p>Você atingiu <strong>90% de sustentabilidade</strong> em sua fábrica de vidro!</p>
+            <p>Sua dedicação à produção responsável e às práticas sustentáveis transformou sua empresa em um exemplo para toda a indústria.</p>
+            <p>O planeta agradece seu compromisso com um futuro mais verde! 🌍</p>
+        </div>
+
+        <div class="equipe">
+            <h2>Equipe de Desenvolvimento</h2>
+            <ul>
+                <li>Ághata Rodrigues</li>
+                <li>Ana Júlia de Marco</li>
+                <li>Pedro Dornelles Marinsek</li>
+                <li>Thaís Marina Tangerino Beltrame</li>
+            </ul>
+        </div>
+
+        <div class="agradecimentos">
+            <h2>Agradecimentos Especiais</h2>
+            <p>Agradecemos a todos os jogadores que se dedicaram a aprender sobre sustentabilidade na indústria vidreira.</p>
+            <p>Que esta experiência inspire práticas mais conscientes no mundo real!</p>
+        </div>
+
+        <button class="botao-voltar" onclick="voltarAoInicio()">Voltar ao Jogo</button>
+    </div>
+
+    <script>
+        function voltarAoInicio() {
+            window.location.href = 'index.html';
+        }
+
+        // Verificar se a imagem de fundo carregou CORRETAMENTE
+        window.addEventListener('load', function() {
+            const bgImage = new Image();
+            bgImage.src = 'IMG/fundoIndex.png';
+            
+            bgImage.onload = function() {
+                console.log('Imagem de fundo carregada com sucesso');
+                // A imagem carregou, então escondemos o fallback
+                document.getElementById('fallbackBg').style.display = 'none';
+                
+                // Forçar o redesenho do background
+                document.body.style.backgroundImage = 'url("IMG/fundoIndex.png")';
+            };
+            
+            bgImage.onerror = function() {
+                console.log('Erro ao carregar imagem de fundo, usando fallback');
+                // Mostrar o fallback e remover a imagem
+                document.getElementById('fallbackBg').style.display = 'block';
+                document.body.style.backgroundImage = 'none';
+            };
+        });
+
+        // Efeito de confete
+        setTimeout(() => {
+            if (typeof confetti === 'function') {
+                confetti({
+                    particleCount: 150,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
+                
+                setTimeout(() => {
+                    confetti({
+                        particleCount: 100,
+                        angle: 60,
+                        spread: 55,
+                        origin: { x: 0 }
+                    });
+                    confetti({
+                        particleCount: 100,
+                        angle: 120,
+                        spread: 55,
+                        origin: { x: 1 }
+                    });
+                }, 500);
+            }
+        }, 1000);
+    </script>
+
+    <!-- Script de confete -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+</body>
+</html>
