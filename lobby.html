@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glass Factory</title>
+
+    <link rel="stylesheet" href="CSS/estiloLobby.css">
+    <link rel="icon" href="IMG/LOGO1_Pranc.png" type="image/png">
+
+    <!-- Scripts essenciais -->
+    <script src="JS/estruturasComuns.js"></script>
+    <script src="JS/inventario.js"></script>
+    <script src="JS/gerenciadorMaquinas.js"></script>
+    <script src="JS/maquinas.js"></script>
+    <script src="JS/logicaMaquinas.js"></script>
+    <script src="JS/tablet.js"></script>
+
+    <!-- YouTube API -->
+    <script src="https://www.youtube.com/iframe_api"></script>
+
+    <!-- Cutscene -->
+    <script src="JS/cutscene.js"></script>
+</head>
+
+<body>
+
+    <!-- ============================================
+         MODAL DA CUTSCENE (DEVE VIR LOGO APÓS <body>)
+    ============================================= -->
+    <div id="cutsceneModal" class="cutscene-modal" style="display:none;">
+        <div class="cutscene-content">
+            <div id="youtubePlayer"></div>
+        </div>
+    </div>
+
+    <!-- ============================================
+         LOBBY CANVAS
+    ============================================= -->
+    <div id="container">
+        <canvas id="lobbyCanvas" width="1080" height="720"></canvas>
+    </div>
+
+    <!-- Modal das máquinas -->
+    <div id="modalMaquina" class="modal">
+        <div class="modal-conteudo">
+            <span class="fechar-modal">&times;</span>
+            <div id="conteudoModal"></div>
+        </div>
+    </div>
+
+    <!-- Modal do Tablet -->
+    <div id="modalTablet" class="modal">
+        <div class="tablet-conteudo">
+            <div id="conteudoTablet"></div>
+        </div>
+    </div>
+
+    <!-- Avisos -->
+    <div id="avisosContainer"></div>
+
+    <!-- ============================================
+         SCRIPT DO LOBBY (DEVE FICAR AO FINAL)
+    ============================================= -->
+    <script>
+        const canvas = document.getElementById('lobbyCanvas');
+        const ctx = canvas.getContext('2d');        
+        // === ÁUDIOS DO LOBBY ===
+        const somAmbiente = new Audio("SOUND/somAmbiente.mp3");
+        somAmbiente.loop = true;
+        somAmbiente.volume = 0.4;
+
+        const somHover = new Audio("SOUND/click.mp3");
+        somHover.volume = 0.6;
+
+        const somISA = new Audio("SOUND/ISAcerto.mp3");
+        somISA.volume = 0.8;
+
+        const imagens = {
+            fundoLobby: new Image(),
+            misturador: new Image(),
+            forno: new Image(),
+            IS: new Image(),
+            scanner: new Image(),
+            tablet: new Image()
+        };
+
+        let maquinas = [];
+        let tablet = null;
+
+        let maquinaHover = null;
+        let tabletHover = false;
+
+        imagens.fundoLobby.src = 'IMG/fundoLobby.png';
+        imagens.misturador.src = 'IMG/misturador.png';
+        imagens.forno.src = 'IMG/forno.png';
+        imagens.IS.src = 'IMG/IS.png';
+        imagens.scanner.src = 'IMG/scanner.png';
+        imagens.tablet.src = 'IMG/icone-gestao.png';
+
+        let imagensCarregadas = 0;
+        const totalImagens = Object.keys(imagens).length;
+
+        function verificarImagensCarregadas() {
+            imagensCarregadas++;
+            if (imagensCarregadas === totalImagens) {
+                inicializarMaquinas();
+                inicializarTablet();
+                desenharLobby();
+                configurarEventosClique();
+                configurarEventosHover();
+            }
+        }
+
+        Object.values(imagens).forEach(imagem => {
+            imagem.onload = verificarImagensCarregadas;
+            imagem.onerror = () => {
+                console.log('Erro ao carregar imagem:', imagem.src);
+                verificarImagensCarregadas();
+            };
+        });
+
+        function inicializarMaquinas() {
+            maquinas.push(new Maquina(ctx, imagens.misturador, 20, 400, 310, 310, 'misturador', 'Misturador de Matérias-Primas'));
+            maquinas.push(new Maquina(ctx, imagens.forno, 260, 400, 270, 270, 'forno', 'Forno de Fusão'));
+            maquinas.push(new Maquina(ctx, imagens.IS, 530, 400, 270, 270, 'IS', 'Injetora e Sopradora'));
+            maquinas.push(new Maquina(ctx, imagens.scanner, 800, 400, 270, 270, 'scanner', 'Scanner de Qualidade'));
+
+            canvas.maquinas = maquinas;
+        }
+
+        function inicializarTablet() {
+            tablet = {
+                ctx: ctx,
+                imagem: imagens.tablet,
+                x: 500,
+                y: 50,
+                largura: 120,
+                altura: 80,
+                tipo: 'tablet',
+                titulo: 'Sistema de Gestão',
+
+                desenhar() {
+                    this.ctx.drawImage(this.imagem, this.x, this.y, this.largura, this.altura);
+                },
+
+                cliqueDentro(mouseX, mouseY) {
+                    return mouseX >= this.x && mouseX <= this.x + this.largura &&
+                           mouseY >= this.y && mouseY <= this.y + this.altura;
+                },
+
+                desenharComHover() {
+                    if (tabletHover) {
+                        ctx.save();
+                        ctx.translate(this.x + this.largura/2, this.y + this.altura/2);
+                        ctx.scale(1.05, 1.05);
+                        ctx.translate(-(this.x + this.largura/2), -(this.y + this.altura/2));
+                        ctx.filter = 'drop-shadow(0 0 15px rgba(255,255,255))';
+                        ctx.drawImage(this.imagem, this.x, this.y, this.largura, this.altura);
+                        ctx.restore();
+                    } else {
+                        this.desenhar();
+                    }
+                }
+            };
+
+            canvas.tablet = tablet;
+        }
+
+        function desenharLobby() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(imagens.fundoLobby, 0, 0, canvas.width, canvas.height);
+
+            maquinas.forEach(maquina => {
+                if (maquina === maquinaHover) {
+                    ctx.save();
+                    ctx.filter = 'drop-shadow(0 0 15px rgba(255,255,255))';
+                    maquina.desenhar();
+                    ctx.restore();
+                } else {
+                    maquina.desenhar();
+                }
+            });
+
+            if (tablet) {
+                tablet.desenharComHover();
+            }
+        }
+
+        function configurarEventosClique() {
+            canvas.addEventListener('click', function(event) {
+                const rect = canvas.getBoundingClientRect();
+                const mouseX = event.clientX - rect.left;
+                const mouseY = event.clientY - rect.top;
+
+                let maquinaClicada = false;
+                maquinas.forEach(maquina => {
+                    if (maquina.cliqueDentro(mouseX, mouseY)) {
+                        maquinaClicada = true;
+                        maquina.abrirModal();
+                    }
+                });
+
+                if (!maquinaClicada && tablet && tablet.cliqueDentro(mouseX, mouseY)) {
+                    TabletSistema.abrirTablet();
+                }
+            });
+        }
+
+        function configurarEventosHover() {
+            canvas.addEventListener('mousemove', function(event) {
+                const rect = canvas.getBoundingClientRect();
+                const mouseX = event.clientX - rect.left;
+                const mouseY = event.clientY - rect.top;
+
+                let novaMaquinaHover = null;
+                let novoTabletHover = false;
+
+                maquinas.forEach(maquina => {
+                    if (maquina.cliqueDentro(mouseX, mouseY)) {
+                        novaMaquinaHover = maquina;
+                    }
+                });
+
+                if (tablet && tablet.cliqueDentro(mouseX, mouseY)) {
+                    novoTabletHover = true;
+                };
+
+                if (novaMaquinaHover !== maquinaHover || novoTabletHover !== tabletHover) {
+
+                    // Se entrou em uma máquina ou tablet → toca som
+                    if ((novaMaquinaHover && novaMaquinaHover !== maquinaHover) ||
+                        (novoTabletHover && !tabletHover)) 
+                    {
+                        if (!somHover.paused) { somHover.currentTime = 0; }
+                        somHover.play().catch(()=>{});
+                    }
+
+                    maquinaHover = novaMaquinaHover;
+                    tabletHover = novoTabletHover;
+
+                    canvas.style.cursor = (maquinaHover || tabletHover) ? "pointer" : "default";
+                    desenharLobby();
+                };
+            });
+
+            canvas.addEventListener('mouseleave', function() {
+                maquinaHover = null;
+                tabletHover = false;
+                canvas.style.cursor = 'default';
+                desenharLobby();
+            });
+
+            
+        }
+
+        /* =====================================================
+           INICIAR CUTSCENE DE FORMA GARANTIDA
+        ===================================================== */
+        function iniciarCutsceneAutomaticamente() {
+            const jaViuCutscene = localStorage.getItem("cutsceneVista");
+
+            if (!sessionStorage.getItem("cutsceneVista")) {
+                iniciarCutscene("V_EbFc1Tkps");
+                sessionStorage.setItem("cutsceneVista", "1");
+            }
+        }
+
+        window.addEventListener("load", iniciarCutsceneAutomaticamente);
+    </script>
+
+</body>
+</html>
